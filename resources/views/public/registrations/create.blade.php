@@ -341,6 +341,23 @@
             transition: 0.2s ease;
         }
 
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 46px;
+            background-image:
+                linear-gradient(45deg, transparent 50%, var(--blue) 50%),
+                linear-gradient(135deg, var(--blue) 50%, transparent 50%);
+            background-position:
+                calc(100% - 24px) 50%,
+                calc(100% - 18px) 50%;
+            background-size:
+                6px 6px,
+                6px 6px;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
         input:focus,
         select:focus {
             border-color: var(--blue);
