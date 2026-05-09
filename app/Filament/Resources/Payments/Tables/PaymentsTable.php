@@ -2,13 +2,17 @@
 
 namespace App\Filament\Resources\Payments\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PaymentsTable
 {
@@ -25,6 +29,11 @@ class PaymentsTable
                     ->label('Participant')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('registration.email')
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('payment_gateway')
                     ->label('Gateway')
@@ -87,6 +96,90 @@ class PaymentsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+
+                Action::make('download_invoice')
+                    ->label('Invoice')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn ($record) => route('admin.payments.invoice', $record))
+                    ->openUrlInNewTab(),
+
+                Action::make('download_receipt')
+                    ->label('Receipt')
+                    ->icon('heroicon-o-receipt-refund')
+                    ->url(fn ($record) => route('admin.payments.receipt', $record))
+                    ->openUrlInNewTab(),
+
+                Action::make('send_invoice')
+                    ->label('Send Invoice')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->load(['registration.program', 'registration.batch', 'registration.price']);
+
+                        $registration = $record->registration;
+
+                        $pdf = Pdf::loadView('admin.payments.invoice', [
+                            'payment' => $record,
+                            'registration' => $registration,
+                            'isPdf' => true,
+                        ])->setPaper('a4');
+
+                        Mail::send('emails.payments.invoice', [
+                            'payment' => $record,
+                            'registration' => $registration,
+                        ], function ($message) use ($record, $registration, $pdf) {
+                            $message
+                                ->to($registration->email, $registration->full_name)
+                                ->subject('Invoice Reframing Academy - ' . $registration->registration_number)
+                                ->attachData(
+                                    $pdf->output(),
+                                    'Invoice-' . $registration->registration_number . '.pdf',
+                                    ['mime' => 'application/pdf']
+                                );
+                        });
+
+                        Notification::make()
+                            ->title('Invoice sent')
+                            ->body('Invoice berhasil dikirim ke email peserta dengan lampiran PDF.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('send_receipt')
+                    ->label('Send Receipt')
+                    ->icon('heroicon-o-envelope')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->load(['registration.program', 'registration.batch', 'registration.price']);
+
+                        $registration = $record->registration;
+
+                        $pdf = Pdf::loadView('admin.payments.receipt', [
+                            'payment' => $record,
+                            'registration' => $registration,
+                            'isPdf' => true,
+                        ])->setPaper('a4');
+
+                        Mail::send('emails.payments.receipt', [
+                            'payment' => $record,
+                            'registration' => $registration,
+                        ], function ($message) use ($record, $registration, $pdf) {
+                            $message
+                                ->to($registration->email, $registration->full_name)
+                                ->subject('E-Receipt Reframing Academy - ' . $registration->registration_number)
+                                ->attachData(
+                                    $pdf->output(),
+                                    'E-Receipt-' . $registration->registration_number . '.pdf',
+                                    ['mime' => 'application/pdf']
+                                );
+                        });
+
+                        Notification::make()
+                            ->title('Receipt sent')
+                            ->body('E-receipt berhasil dikirim ke email peserta dengan lampiran PDF.')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
