@@ -30,6 +30,8 @@ class Registration extends Model
 
         'alumni_number',
         'group_name',
+        'shirt_size',
+        'glove_size',
 
         'base_price',
         'discount_amount',

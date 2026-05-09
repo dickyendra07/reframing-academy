@@ -778,6 +778,44 @@
                         <section class="panel">
                             <div class="panel-header">
                                 <span class="step-label">Step 03</span>
+                                <h2 class="panel-title">Dresscode Information</h2>
+                                <p class="panel-description">
+                                    Please select your shirt and handscoon size for event preparation.
+                                </p>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="field">
+                                    <label>Shirt size</label>
+                                    <select name="shirt_size">
+                                        <option value="">Select shirt size</option>
+                                        <option value="XS" @selected(old('shirt_size') === 'XS')>XS</option>
+                                        <option value="S" @selected(old('shirt_size') === 'S')>S</option>
+                                        <option value="M" @selected(old('shirt_size') === 'M')>M</option>
+                                        <option value="L" @selected(old('shirt_size') === 'L')>L</option>
+                                        <option value="XL" @selected(old('shirt_size') === 'XL')>XL</option>
+                                        <option value="XXL" @selected(old('shirt_size') === 'XXL')>XXL</option>
+                                        <option value="XXXL" @selected(old('shirt_size') === 'XXXL')>XXXL</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label>Handscoon size</label>
+                                    <select name="glove_size">
+                                        <option value="">Select handscoon size</option>
+                                        <option value="XS" @selected(old('glove_size') === 'XS')>XS</option>
+                                        <option value="S" @selected(old('glove_size') === 'S')>S</option>
+                                        <option value="M" @selected(old('glove_size') === 'M')>M</option>
+                                        <option value="L" @selected(old('glove_size') === 'L')>L</option>
+                                        <option value="XL" @selected(old('glove_size') === 'XL')>XL</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="panel">
+                            <div class="panel-header">
+                                <span class="step-label">Step 04</span>
                                 <h2 class="panel-title">Pricing Category</h2>
                                 <p class="panel-description">
                                     Choose the pricing category that matches your professional background or registration eligibility.
@@ -840,7 +878,7 @@
 
                         <section class="panel">
                             <div class="panel-header">
-                                <span class="step-label">Step 04</span>
+                                <span class="step-label">Step 05</span>
                                 <h2 class="panel-title">Confirmation</h2>
                                 <p class="panel-description">
                                     Please confirm that your data is accurate before continuing.

@@ -42,6 +42,8 @@ class PublicRegistrationController extends Controller
 
             'alumni_number' => ['nullable', 'string', 'max:255'],
             'group_name' => ['nullable', 'string', 'max:255'],
+            'shirt_size' => ['nullable', 'string', 'max:50'],
+            'glove_size' => ['nullable', 'string', 'max:50'],
 
             'terms_accepted' => ['accepted'],
             'data_confirmation_accepted' => ['accepted'],
@@ -94,6 +96,8 @@ class PublicRegistrationController extends Controller
 
             'alumni_number' => $validated['alumni_number'] ?? null,
             'group_name' => $validated['group_name'] ?? null,
+            'shirt_size' => $validated['shirt_size'] ?? null,
+            'glove_size' => $validated['glove_size'] ?? null,
 
             'base_price' => $price->amount,
             'discount_amount' => 0,
