@@ -483,6 +483,34 @@
             font-size: 16px;
         }
 
+        .download-document-card {
+            margin-top: 16px;
+            border-radius: 24px;
+            background: var(--blue-soft);
+            border: 1px solid #d9edf6;
+            padding: 22px;
+        }
+
+        .download-document-card h4 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 20px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            font-weight: 950;
+        }
+
+        .download-document-card p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .download-document-card .button {
+            margin-top: 16px;
+        }
+
         .document-upload-card {
             margin-top: 16px;
             border-radius: 24px;
@@ -867,6 +895,18 @@
                                         <div class="document-box">
                                             <span>Document Status</span>
                                             <strong>{{ str_replace('_', ' ', $registration->document_status) }}</strong>
+                                        </div>
+
+                                        <div class="download-document-card">
+                                            <h4>Surat Perizinan Cuti</h4>
+                                            <p>
+                                                Download template surat perizinan cuti/LOA dari Reframing Academy,
+                                                lalu lengkapi bagian titik-titik sesuai kebutuhan peserta.
+                                            </p>
+
+                                            <a href="{{ route('participant.documents.loa-template') }}" class="button button-blue">
+                                                Download Template LOA
+                                            </a>
                                         </div>
 
                                         <div class="document-upload-card">

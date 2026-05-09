@@ -6,6 +6,7 @@ use App\Http\Controllers\PublicProgramController;
 use App\Http\Controllers\PublicRegistrationController;
 use App\Models\Registration;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AdminRegistrationDocumentController;
 use App\Http\Controllers\ParticipantDocumentController;
 
@@ -68,6 +69,18 @@ require __DIR__.'/auth.php';
 Route::post('/payment/{registration:registration_number}/upload-proof', [PublicPaymentController::class, 'uploadProof'])->name('public.payments.upload-proof');
 
 Route::post('/dashboard/registrations/{registration}/documents', [ParticipantDocumentController::class, 'store'])->middleware(['auth', 'verified'])->name('participant.documents.store');
+
+
+Route::get('/dashboard/documents/loa-template', function () {
+    $path = resource_path('document-templates/LOA-Reframing-Template.docx');
+
+    abort_unless(file_exists($path), 404);
+
+    return response()->download($path, 'LOA-Reframing-Template.docx');
+})
+    ->middleware(['auth', 'verified'])
+    ->name('participant.documents.loa-template');
+
 
 
 Route::post('/admin/registration-documents/{document}/approve', [AdminRegistrationDocumentController::class, 'approve'])
