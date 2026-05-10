@@ -565,11 +565,11 @@
 
                     <aside class="hero-side">
                         <div>
-                            <p class="side-label">Starts from</p>
-                            <p class="side-price">Rp{{ number_format($lowestPrice ?? 0, 0, ',', '.') }}</p>
+                            <p class="side-label">Program Pricing</p>
+                            <p class="side-price">Available at Payment Step</p>
 
                             <p class="side-text">
-                                Choose a pricing category, complete your participant data, and continue the payment process.
+                                Complete your registration first. Pricing and payment details will be shown at the payment step.
                             </p>
                         </div>
 
@@ -592,7 +592,7 @@
                 <div class="panel">
                     <h2 class="panel-title">Pricing Categories</h2>
                     <p class="panel-subtitle">
-                        Select the category that matches your professional background or registration eligibility.
+                        Select the category that matches your professional background or registration eligibility. Pricing will be shown at the payment step.
                     </p>
 
                     <div class="price-list">
@@ -619,7 +619,7 @@
                                 </div>
 
                                 <div class="price-amount">
-                                    Rp{{ number_format($price->amount, 0, ',', '.') }}
+                                    Shown at payment step
                                 </div>
                             </article>
                         @endforeach

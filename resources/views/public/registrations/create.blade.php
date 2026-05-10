@@ -993,7 +993,7 @@
                                             </div>
 
                                             <div class="price-amount">
-                                                Rp{{ number_format($price->amount, 0, ',', '.') }}
+                                                Shown at payment step
                                             </div>
                                         </div>
                                     </label>

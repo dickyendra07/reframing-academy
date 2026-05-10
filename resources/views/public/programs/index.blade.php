@@ -681,13 +681,13 @@
 
                             <aside class="program-detail-side">
                                 <div>
-                                    <p class="price-label">Starts from</p>
+                                    <p class="price-label">Program Pricing</p>
                                     <p class="price-value">
-                                        Rp{{ number_format($featuredLowestPrice ?? 0, 0, ',', '.') }}
+                                        Available at Payment Step
                                     </p>
 
                                     <p class="side-note">
-                                        Complete pricing categories are available on the program detail page.
+                                        Pricing details will be shown after completing the registration form.
                                     </p>
                                 </div>
 
@@ -722,8 +722,8 @@
                                 </div>
 
                                 <div>
-                                    <dt>Starts from</dt>
-                                    <dd>Rp{{ number_format($lowestPrice ?? 0, 0, ',', '.') }}</dd>
+                                    <dt>Pricing</dt>
+                                    <dd>Shown at payment step</dd>
                                 </div>
                             </dl>
 
