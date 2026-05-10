@@ -442,6 +442,71 @@
             font-weight: 850;
         }
 
+        .payment-options {
+            display: grid;
+            gap: 14px;
+        }
+
+        .payment-option {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 14px;
+            align-items: start;
+            border-radius: 24px;
+            border: 1px solid var(--line);
+            background: var(--soft);
+            padding: 22px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .payment-option:hover {
+            border-color: #c8d8e2;
+            background: #ffffff;
+            box-shadow: 0 16px 40px rgba(18, 58, 86, 0.07);
+        }
+
+        .payment-option input {
+            width: 18px;
+            height: 18px;
+            min-height: unset;
+            margin-top: 4px;
+            accent-color: var(--blue);
+        }
+
+        .payment-option input:disabled {
+            cursor: not-allowed;
+        }
+
+        .payment-option-title {
+            display: block;
+            color: var(--navy);
+            font-size: 18px;
+            font-weight: 950;
+            letter-spacing: -0.3px;
+        }
+
+        .payment-option-desc {
+            display: block;
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .payment-option-note {
+            display: inline-flex;
+            width: fit-content;
+            margin-top: 12px;
+            border-radius: 999px;
+            background: white;
+            color: var(--blue);
+            border: 1px solid #d9edf6;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 850;
+        }
+
         .checkbox-list {
             display: grid;
             gap: 14px;
@@ -833,6 +898,63 @@
                         <section class="panel">
                             <div class="panel-header">
                                 <span class="step-label">Step 04</span>
+                                <h2 class="panel-title">Payment Method</h2>
+                                <p class="panel-description">
+                                    Choose your payment method. Installment is only available if the event is more than 30 days away.
+                                </p>
+                            </div>
+
+                            <div class="payment-options">
+                                <label class="payment-option">
+                                    <input
+                                        type="radio"
+                                        name="payment_type"
+                                        value="full_payment"
+                                        required
+                                        @checked(old('payment_type', 'full_payment') === 'full_payment')
+                                    >
+
+                                    <span>
+                                        <span class="payment-option-title">Full Payment</span>
+                                        <span class="payment-option-desc">
+                                            Pay the full program fee in one payment.
+                                        </span>
+                                    </span>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input
+                                        type="radio"
+                                        name="payment_type"
+                                        value="installment"
+                                        required
+                                        @checked(old('payment_type') === 'installment')
+                                        @disabled(! $installmentAvailable)
+                                    >
+
+                                    <span>
+                                        <span class="payment-option-title">Installment / Cicilan</span>
+                                        <span class="payment-option-desc">
+                                            Pay 50% DP first, then complete the remaining balance no later than 30 days before the event.
+                                        </span>
+
+                                        @if ($installmentAvailable)
+                                            <span class="payment-option-note">
+                                                Pelunasan maksimal {{ $installmentDueDate->format('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span class="payment-option-note">
+                                                Installment tidak tersedia karena acara sudah kurang dari 30 hari.
+                                            </span>
+                                        @endif
+                                    </span>
+                                </label>
+                            </div>
+                        </section>
+
+                        <section class="panel">
+                            <div class="panel-header">
+                                <span class="step-label">Step 05</span>
                                 <h2 class="panel-title">Pricing Category</h2>
                                 <p class="panel-description">
                                     Choose the pricing category that matches your professional background or registration eligibility.
@@ -895,7 +1017,7 @@
 
                         <section class="panel">
                             <div class="panel-header">
-                                <span class="step-label">Step 05</span>
+                                <span class="step-label">Step 06</span>
                                 <h2 class="panel-title">Confirmation</h2>
                                 <p class="panel-description">
                                     Please confirm that your data is accurate before continuing.

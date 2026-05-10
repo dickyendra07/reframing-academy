@@ -510,6 +510,14 @@
 </head>
 
 <body>
+    @php
+        $isInstallment = $registration->payment_type === 'installment';
+        $dpAmount = $registration->dp_amount ?: (int) ceil($registration->total_amount * 0.5);
+        $remainingAmount = max((int) $registration->total_amount - (int) $dpAmount, 0);
+        $amountToPay = $isInstallment ? $dpAmount : $registration->total_amount;
+        $installmentDueDate = $registration->batch->start_date->copy()->subDays(30);
+    @endphp
+
     <header class="navbar">
         <div class="container navbar-inner">
             <a href="{{ route('public.programs.index') }}" class="brand">
@@ -583,9 +591,31 @@
                             </div>
 
                             <div class="summary-box">
-                                <span>Total Payment</span>
+                                <span>Total Program Fee</span>
                                 <strong>Rp{{ number_format($registration->total_amount, 0, ',', '.') }}</strong>
                             </div>
+
+                            <div class="summary-box">
+                                <span>Payment Method</span>
+                                <strong>{{ $isInstallment ? 'INSTALLMENT' : 'FULL PAYMENT' }}</strong>
+                            </div>
+
+                            @if ($isInstallment)
+                                <div class="summary-box">
+                                    <span>DP Amount</span>
+                                    <strong>Rp{{ number_format($dpAmount, 0, ',', '.') }}</strong>
+                                </div>
+
+                                <div class="summary-box">
+                                    <span>Remaining Balance</span>
+                                    <strong>Rp{{ number_format($remainingAmount, 0, ',', '.') }}</strong>
+                                </div>
+
+                                <div class="summary-box">
+                                    <span>Payment Deadline</span>
+                                    <strong>{{ $installmentDueDate->format('d M Y') }}</strong>
+                                </div>
+                            @endif
 
                             <div class="summary-box">
                                 <span>Payment Status</span>
@@ -605,6 +635,9 @@
 
                         <p class="text">
                             Please transfer the exact amount below, then upload your payment proof.
+                            @if ($isInstallment)
+                                This registration uses installment payment. The amount below is the DP amount.
+                            @endif
                         </p>
 
                         <div class="bank-box">
@@ -627,12 +660,24 @@
                             </div>
 
                             <div class="bank-row">
-                                <span>Amount</span>
-                                <strong class="copy-value">Rp{{ number_format($registration->total_amount, 0, ',', '.') }}</strong>
-                                <button type="button" class="copy-button" data-copy="{{ $registration->total_amount }}">
+                                <span>{{ $isInstallment ? 'DP Amount' : 'Amount' }}</span>
+                                <strong class="copy-value">Rp{{ number_format($amountToPay, 0, ',', '.') }}</strong>
+                                <button type="button" class="copy-button" data-copy="{{ $amountToPay }}">
                                     Copy
                                 </button>
                             </div>
+
+                            @if ($isInstallment)
+                                <div class="bank-row">
+                                    <span>Remaining Balance</span>
+                                    <strong>Rp{{ number_format($remainingAmount, 0, ',', '.') }}</strong>
+                                </div>
+
+                                <div class="bank-row">
+                                    <span>Final Payment Due</span>
+                                    <strong>{{ $installmentDueDate->format('d M Y') }}</strong>
+                                </div>
+                            @endif
 
                             <div class="bank-row">
                                 <span>Status</span>

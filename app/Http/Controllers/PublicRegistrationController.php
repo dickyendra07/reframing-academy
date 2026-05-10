@@ -7,7 +7,6 @@ use App\Models\ProgramPrice;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class PublicRegistrationController extends Controller
@@ -18,6 +17,8 @@ class PublicRegistrationController extends Controller
 
         return view('public.registrations.create', [
             'batch' => $batch,
+            'installmentAvailable' => $this->installmentAvailable($batch),
+            'installmentDueDate' => $batch->start_date->copy()->subDays(30),
         ]);
     }
 
@@ -25,8 +26,11 @@ class PublicRegistrationController extends Controller
     {
         $batch->load(['program', 'prices']);
 
+        $installmentAvailable = $this->installmentAvailable($batch);
+
         $validated = $request->validate([
             'program_price_id' => ['required', 'exists:program_prices,id'],
+            'payment_type' => ['required', 'in:full_payment,installment'],
 
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
@@ -48,6 +52,12 @@ class PublicRegistrationController extends Controller
             'terms_accepted' => ['accepted'],
             'data_confirmation_accepted' => ['accepted'],
         ]);
+
+        if ($validated['payment_type'] === 'installment' && ! $installmentAvailable) {
+            return back()
+                ->withErrors(['payment_type' => 'Installment hanya tersedia jika acara masih lebih dari 30 hari.'])
+                ->withInput();
+        }
 
         $price = ProgramPrice::query()
             ->where('id', $validated['program_price_id'])
@@ -74,6 +84,11 @@ class PublicRegistrationController extends Controller
         }
 
         $registrationNumber = $this->generateRegistrationNumber($batch);
+        $totalAmount = (int) $price->amount;
+        $paymentType = $validated['payment_type'];
+        $dpAmount = $paymentType === 'installment'
+            ? (int) ceil($totalAmount * 0.5)
+            : null;
 
         $registration = Registration::create([
             'registration_number' => $registrationNumber,
@@ -99,11 +114,12 @@ class PublicRegistrationController extends Controller
             'shirt_size' => $validated['shirt_size'] ?? null,
             'glove_size' => $validated['glove_size'] ?? null,
 
-            'base_price' => $price->amount,
+            'base_price' => $totalAmount,
             'discount_amount' => 0,
-            'total_amount' => $price->amount,
+            'total_amount' => $totalAmount,
 
-            'payment_type' => 'full_payment',
+            'payment_type' => $paymentType,
+            'dp_amount' => $dpAmount,
 
             'registration_status' => 'waiting_payment',
             'payment_status' => 'unpaid',
@@ -125,6 +141,11 @@ class PublicRegistrationController extends Controller
         return view('public.registrations.success', [
             'registration' => $registration,
         ]);
+    }
+
+    private function installmentAvailable(ProgramBatch $batch): bool
+    {
+        return now()->startOfDay()->lt($batch->start_date->copy()->subDays(30)->startOfDay());
     }
 
     private function generateRegistrationNumber(ProgramBatch $batch): string
