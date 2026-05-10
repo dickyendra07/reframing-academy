@@ -8,6 +8,7 @@ use App\Models\Registration;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AdminRegistrationDocumentController;
+use App\Http\Controllers\AdminPaymentDocumentController;
 use App\Http\Controllers\ParticipantDocumentController;
 
 Route::get('/', function () {
@@ -90,4 +91,18 @@ Route::post('/admin/registration-documents/{document}/approve', [AdminRegistrati
 Route::post('/admin/registration-documents/{document}/need-revision', [AdminRegistrationDocumentController::class, 'needRevision'])
     ->middleware(['auth'])
     ->name('admin.registration-documents.need-revision');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/payments/{payment}/invoice', [AdminPaymentDocumentController::class, 'invoice'])
+        ->name('admin.payments.invoice');
+
+    Route::get('/admin/payments/{payment}/receipt', [AdminPaymentDocumentController::class, 'receipt'])
+        ->name('admin.payments.receipt');
+
+    Route::post('/admin/payments/{payment}/send-invoice', [AdminPaymentDocumentController::class, 'sendInvoice'])
+        ->name('admin.payments.send-invoice');
+
+    Route::post('/admin/payments/{payment}/send-receipt', [AdminPaymentDocumentController::class, 'sendReceipt'])
+        ->name('admin.payments.send-receipt');
+});
 
