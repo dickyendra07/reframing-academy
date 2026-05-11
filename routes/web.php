@@ -69,6 +69,9 @@ require __DIR__.'/auth.php';
 
 Route::post('/payment/{registration:registration_number}/upload-proof', [PublicPaymentController::class, 'uploadProof'])->name('public.payments.upload-proof');
 
+Route::get('/payment/{registration:registration_number}/success', [PublicPaymentController::class, 'success'])
+    ->name('public.payments.success');
+
 Route::post('/dashboard/registrations/{registration}/documents', [ParticipantDocumentController::class, 'store'])->middleware(['auth', 'verified'])->name('participant.documents.store');
 
 

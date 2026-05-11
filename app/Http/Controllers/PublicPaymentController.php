@@ -19,6 +19,15 @@ class PublicPaymentController extends Controller
         ]);
     }
 
+    public function success(Registration $registration): View
+    {
+        $registration->load(['program', 'batch', 'price']);
+
+        return view('public.payments.success', [
+            'registration' => $registration,
+        ]);
+    }
+
     public function uploadProof(Request $request, Registration $registration): RedirectResponse
     {
         $validated = $request->validate([
@@ -52,8 +61,8 @@ class PublicPaymentController extends Controller
         );
 
         return redirect()
-            ->route('public.payments.show', $registration->registration_number)
-            ->with('success', 'Payment proof uploaded successfully. Our admin team will review your payment shortly.');
+            ->route('public.payments.success', $registration->registration_number)
+            ->with('success', 'Payment confirmation submitted successfully.');
     }
 
     public function simulate(Registration $registration): RedirectResponse
