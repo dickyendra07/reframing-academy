@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AdminRegistrationDocumentController;
 use App\Http\Controllers\AdminPaymentDocumentController;
 use App\Http\Controllers\ParticipantDocumentController;
+use App\Http\Controllers\ParticipantLoaController;
 
 Route::get('/', function () {
     return redirect()->route('public.programs.index');
@@ -75,15 +76,13 @@ Route::get('/payment/{registration:registration_number}/success', [PublicPayment
 Route::post('/dashboard/registrations/{registration}/documents', [ParticipantDocumentController::class, 'store'])->middleware(['auth', 'verified'])->name('participant.documents.store');
 
 
-Route::get('/dashboard/documents/loa-template', function () {
-    $path = resource_path('document-templates/LOA-Reframing-Template.docx');
-
-    abort_unless(file_exists($path), 404);
-
-    return response()->download($path, 'LOA-Reframing-Template.docx');
-})
+Route::get('/dashboard/registrations/{registration}/loa', [ParticipantLoaController::class, 'create'])
     ->middleware(['auth', 'verified'])
-    ->name('participant.documents.loa-template');
+    ->name('participant.loa.create');
+
+Route::post('/dashboard/registrations/{registration}/loa', [ParticipantLoaController::class, 'download'])
+    ->middleware(['auth', 'verified'])
+    ->name('participant.loa.download');
 
 
 

@@ -898,15 +898,27 @@
                                         </div>
 
                                         <div class="download-document-card">
-                                            <h4>Surat Perizinan Cuti</h4>
-                                            <p>
-                                                Download template surat perizinan cuti/LOA dari Reframing Academy,
-                                                lalu lengkapi bagian titik-titik sesuai kebutuhan peserta.
-                                            </p>
+                                            <h4>Surat Perizinan Cuti / LOA</h4>
 
-                                            <a href="{{ route('participant.documents.loa-template') }}" class="button button-blue">
-                                                Download Template LOA
-                                            </a>
+                                            @if ($registration->payment_status === 'paid')
+                                                <p>
+                                                    Generate surat perizinan cuti/LOA dalam format PDF resmi yang tidak dapat diedit bebas.
+                                                    Isi data tujuan surat, lalu sistem akan membuat PDF otomatis.
+                                                </p>
+
+                                                <a href="{{ route('participant.loa.create', $registration) }}" class="button button-blue">
+                                                    Generate LOA PDF
+                                                </a>
+                                            @else
+                                                <p>
+                                                    LOA tersedia setelah pembayaran disetujui oleh admin.
+                                                    Silakan selesaikan pembayaran terlebih dahulu.
+                                                </p>
+
+                                                <a href="{{ route('public.payments.show', $registration->registration_number) }}" class="button button-outline">
+                                                    Complete Payment First
+                                                </a>
+                                            @endif
                                         </div>
 
                                         <div class="document-upload-card">
