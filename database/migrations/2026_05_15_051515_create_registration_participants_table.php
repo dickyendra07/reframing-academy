@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('glove_size')->nullable();
             $table->timestamps();
 
-            $table->index(['registration_id', 'participant_order']);
+            $table->index(['registration_id', 'participant_order'], 'reg_participants_reg_order_idx');
         });
     }
 
