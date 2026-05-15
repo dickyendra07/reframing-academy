@@ -40,11 +40,19 @@ class ProgramPriceForm
                             ->maxLength(255),
 
                         TextInput::make('amount')
-                            ->label('Amount')
+                            ->label('Amount Per Participant')
                             ->numeric()
                             ->prefix('Rp')
                             ->required()
                             ->minValue(0),
+
+                        TextInput::make('participant_count')
+                            ->label('Participant Count')
+                            ->helperText('Isi 1 untuk single participant. Isi 3 untuk Group of 3, 5 untuk Group of 5, dst.')
+                            ->numeric()
+                            ->required()
+                            ->default(1)
+                            ->minValue(1),
 
                         Select::make('status')
                             ->label('Status')

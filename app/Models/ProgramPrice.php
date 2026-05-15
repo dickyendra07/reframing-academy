@@ -12,6 +12,7 @@ class ProgramPrice extends Model
         'program_batch_id',
         'label',
         'amount',
+        'participant_count',
         'description',
         'requires_alumni_number',
         'requires_group_name',
@@ -21,6 +22,7 @@ class ProgramPrice extends Model
 
     protected $casts = [
         'amount' => 'integer',
+        'participant_count' => 'integer',
         'requires_alumni_number' => 'boolean',
         'requires_group_name' => 'boolean',
     ];

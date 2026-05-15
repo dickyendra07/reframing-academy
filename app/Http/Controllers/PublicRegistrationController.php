@@ -49,6 +49,20 @@ class PublicRegistrationController extends Controller
             'shirt_size' => ['nullable', 'string', 'max:50'],
             'glove_size' => ['nullable', 'string', 'max:50'],
 
+            'group_participants' => ['nullable', 'array'],
+            'group_participants.*.full_name' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.email' => ['nullable', 'email', 'max:255'],
+            'group_participants.*.phone' => ['nullable', 'string', 'max:50'],
+            'group_participants.*.province' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.city' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.profession' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.education' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.nik_number' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.str_number' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.institution' => ['nullable', 'string', 'max:255'],
+            'group_participants.*.shirt_size' => ['nullable', 'string', 'max:50'],
+            'group_participants.*.glove_size' => ['nullable', 'string', 'max:50'],
+
             'terms_accepted' => ['accepted'],
             'data_confirmation_accepted' => ['accepted'],
         ]);
@@ -77,6 +91,42 @@ class PublicRegistrationController extends Controller
                 ->withInput();
         }
 
+        $participantCount = max((int) ($price->participant_count ?? 1), 1);
+        $additionalParticipantCount = max($participantCount - 1, 0);
+        $groupParticipants = collect($validated['group_participants'] ?? [])
+            ->take($additionalParticipantCount)
+            ->values();
+
+        if ($additionalParticipantCount > 0) {
+            if (empty($validated['group_name'])) {
+                return back()
+                    ->withErrors(['group_name' => 'Nama group / nama ketua group wajib diisi untuk registrasi group.'])
+                    ->withInput();
+            }
+
+            for ($index = 0; $index < $additionalParticipantCount; $index++) {
+                $participant = $groupParticipants->get($index, []);
+
+                if (empty($participant['full_name'] ?? null)) {
+                    return back()
+                        ->withErrors(['group_participants.' . $index . '.full_name' => 'Nama anggota group ke-' . ($index + 2) . ' wajib diisi.'])
+                        ->withInput();
+                }
+
+                if (empty($participant['email'] ?? null)) {
+                    return back()
+                        ->withErrors(['group_participants.' . $index . '.email' => 'Email anggota group ke-' . ($index + 2) . ' wajib diisi.'])
+                        ->withInput();
+                }
+
+                if (empty($participant['phone'] ?? null)) {
+                    return back()
+                        ->withErrors(['group_participants.' . $index . '.phone' => 'Nomor WhatsApp anggota group ke-' . ($index + 2) . ' wajib diisi.'])
+                        ->withInput();
+                }
+            }
+        }
+
         if ($price->requires_profession && ($validated['profession'] ?? null) !== $price->requires_profession) {
             return back()
                 ->withErrors(['profession' => 'Kategori harga ini hanya berlaku untuk profesi ' . $price->requires_profession . '.'])
@@ -84,7 +134,8 @@ class PublicRegistrationController extends Controller
         }
 
         $registrationNumber = $this->generateRegistrationNumber($batch);
-        $totalAmount = (int) $price->amount;
+        $baseAmount = (int) $price->amount;
+        $totalAmount = $baseAmount * $participantCount;
         $paymentType = $validated['payment_type'];
         $dpAmount = $paymentType === 'installment'
             ? (int) ceil($totalAmount * 0.5)
@@ -114,7 +165,7 @@ class PublicRegistrationController extends Controller
             'shirt_size' => $validated['shirt_size'] ?? null,
             'glove_size' => $validated['glove_size'] ?? null,
 
-            'base_price' => $totalAmount,
+            'base_price' => $baseAmount,
             'discount_amount' => 0,
             'total_amount' => $totalAmount,
 
@@ -129,6 +180,24 @@ class PublicRegistrationController extends Controller
             'data_confirmation_accepted_at' => now(),
         ]);
 
+        foreach ($groupParticipants as $index => $participant) {
+            $registration->participants()->create([
+                'participant_order' => $index + 2,
+                'full_name' => $participant['full_name'] ?? '',
+                'email' => $participant['email'] ?? null,
+                'phone' => $participant['phone'] ?? null,
+                'province' => $participant['province'] ?? null,
+                'city' => $participant['city'] ?? null,
+                'profession' => $participant['profession'] ?? null,
+                'education' => $participant['education'] ?? null,
+                'nik_number' => $participant['nik_number'] ?? null,
+                'str_number' => $participant['str_number'] ?? null,
+                'institution' => $participant['institution'] ?? null,
+                'shirt_size' => $participant['shirt_size'] ?? null,
+                'glove_size' => $participant['glove_size'] ?? null,
+            ]);
+        }
+
         return redirect()
             ->route('public.registrations.success', $registration)
             ->with('success', 'Registrasi berhasil dibuat.');
@@ -136,7 +205,7 @@ class PublicRegistrationController extends Controller
 
     public function success(Registration $registration): View
     {
-        $registration->load(['program', 'batch', 'price']);
+        $registration->load(['program', 'batch', 'price', 'participants']);
 
         return view('public.registrations.success', [
             'registration' => $registration,

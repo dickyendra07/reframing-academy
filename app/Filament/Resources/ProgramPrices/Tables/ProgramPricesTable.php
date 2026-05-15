@@ -33,8 +33,13 @@ class ProgramPricesTable
                     ->sortable(),
 
                 TextColumn::make('amount')
-                    ->label('Amount')
+                    ->label('Amount / Person')
                     ->money('IDR')
+                    ->sortable(),
+
+                TextColumn::make('participant_count')
+                    ->label('Participants')
+                    ->badge()
                     ->sortable(),
 
                 TextColumn::make('requires_profession')

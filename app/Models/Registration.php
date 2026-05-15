@@ -82,6 +82,11 @@ class Registration extends Model
         return $this->belongsTo(ProgramPrice::class, 'program_price_id');
     }
 
+    public function participants(): HasMany
+    {
+        return $this->hasMany(RegistrationParticipant::class)->orderBy('participant_order');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(RegistrationDocument::class);

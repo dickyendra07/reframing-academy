@@ -971,6 +971,8 @@
                                                 value="{{ $price->id }}"
                                                 required
                                                 @checked(old('program_price_id') == $price->id)
+                                                data-participant-count="{{ max((int) ($price->participant_count ?? 1), 1) }}"
+                                                data-requires-group="{{ $price->requires_group_name ? '1' : '0' }}"
                                             >
 
                                             <div>
@@ -984,6 +986,10 @@
 
                                                     @if ($price->requires_alumni_number)
                                                         <span class="requirement">Alumni number required</span>
+                                                    @endif
+
+                                                    @if (($price->participant_count ?? 1) > 1)
+                                                        <span class="requirement">{{ $price->participant_count }} participants included</span>
                                                     @endif
 
                                                     @if ($price->requires_group_name)
@@ -1008,10 +1014,20 @@
                                 </div>
 
                                 <div class="field">
-                                    <label>Group name</label>
+                                    <label>Group name / Leader name</label>
                                     <input type="text" name="group_name" value="{{ old('group_name') }}">
-                                    <div class="hint">Only required if you choose a group pricing category.</div>
+                                    <div class="hint">Required if you choose a group pricing category.</div>
                                 </div>
+                            </div>
+
+                            <div id="group-members-card" class="group-members-card">
+                                <h3 class="panel-title" style="font-size: 22px;">Group Members</h3>
+                                <p class="panel-description">
+                                    Please fill in the additional participants included in this group registration.
+                                    The main participant data above will be used as Participant 1 / group leader.
+                                </p>
+
+                                <div id="group-member-list" class="group-member-list"></div>
                             </div>
                         </section>
 
@@ -1075,5 +1091,121 @@
             </div>
         </section>
     </main>
+
+    <script>
+        const oldGroupParticipants = @json(old('group_participants', []));
+        const groupMembersCard = document.getElementById('group-members-card');
+        const groupMemberList = document.getElementById('group-member-list');
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function memberValue(index, field) {
+            return escapeHtml(oldGroupParticipants?.[index]?.[field] ?? '');
+        }
+
+        function renderGroupMembers() {
+            const selectedPrice = document.querySelector('input[name="program_price_id"]:checked');
+            const participantCount = selectedPrice ? parseInt(selectedPrice.dataset.participantCount || '1', 10) : 1;
+            const additionalCount = Math.max(participantCount - 1, 0);
+
+            groupMemberList.innerHTML = '';
+
+            if (additionalCount <= 0) {
+                groupMembersCard.classList.remove('is-visible');
+                return;
+            }
+
+            groupMembersCard.classList.add('is-visible');
+
+            for (let index = 0; index < additionalCount; index++) {
+                const participantNumber = index + 2;
+
+                const card = document.createElement('div');
+                card.className = 'group-member-card';
+
+                card.innerHTML = `
+                    <h4 class="group-member-title">Participant ${participantNumber}</h4>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Full Name *</label>
+                            <input type="text" name="group_participants[${index}][full_name]" value="${memberValue(index, 'full_name')}" required>
+                        </div>
+
+                        <div class="field">
+                            <label>Email *</label>
+                            <input type="email" name="group_participants[${index}][email]" value="${memberValue(index, 'email')}" required>
+                        </div>
+
+                        <div class="field">
+                            <label>WhatsApp Number *</label>
+                            <input type="text" name="group_participants[${index}][phone]" value="${memberValue(index, 'phone')}" required>
+                        </div>
+
+                        <div class="field">
+                            <label>Province</label>
+                            <input type="text" name="group_participants[${index}][province]" value="${memberValue(index, 'province')}">
+                        </div>
+
+                        <div class="field">
+                            <label>City</label>
+                            <input type="text" name="group_participants[${index}][city]" value="${memberValue(index, 'city')}">
+                        </div>
+
+                        <div class="field">
+                            <label>Profession</label>
+                            <input type="text" name="group_participants[${index}][profession]" value="${memberValue(index, 'profession')}">
+                        </div>
+
+                        <div class="field">
+                            <label>Education</label>
+                            <input type="text" name="group_participants[${index}][education]" value="${memberValue(index, 'education')}">
+                        </div>
+
+                        <div class="field">
+                            <label>NIK Number</label>
+                            <input type="text" name="group_participants[${index}][nik_number]" value="${memberValue(index, 'nik_number')}">
+                        </div>
+
+                        <div class="field">
+                            <label>STR Number</label>
+                            <input type="text" name="group_participants[${index}][str_number]" value="${memberValue(index, 'str_number')}">
+                        </div>
+
+                        <div class="field">
+                            <label>Institution / Workplace</label>
+                            <input type="text" name="group_participants[${index}][institution]" value="${memberValue(index, 'institution')}">
+                        </div>
+
+                        <div class="field">
+                            <label>Shirt Size</label>
+                            <input type="text" name="group_participants[${index}][shirt_size]" value="${memberValue(index, 'shirt_size')}">
+                        </div>
+
+                        <div class="field">
+                            <label>Glove Size</label>
+                            <input type="text" name="group_participants[${index}][glove_size]" value="${memberValue(index, 'glove_size')}">
+                        </div>
+                    </div>
+                `;
+
+                groupMemberList.appendChild(card);
+            }
+        }
+
+        document.querySelectorAll('input[name="program_price_id"]').forEach((input) => {
+            input.addEventListener('change', renderGroupMembers);
+        });
+
+        renderGroupMembers();
+    </script>
+
 </body>
 </html>
