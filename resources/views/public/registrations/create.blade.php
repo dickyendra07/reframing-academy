@@ -1185,13 +1185,29 @@
                         </div>
 
                         <div class="field">
-                            <label>Shirt Size</label>
-                            <input type="text" name="group_participants[${index}][shirt_size]" value="${memberValue(index, 'shirt_size')}">
+                            <label>T-Shirt Size</label>
+                            <select name="group_participants[${index}][shirt_size]">
+                                <option value="">Select T-shirt size</option>
+                                <option value="XS" ${memberValue(index, 'shirt_size') === 'XS' ? 'selected' : ''}>XS</option>
+                                <option value="S" ${memberValue(index, 'shirt_size') === 'S' ? 'selected' : ''}>S</option>
+                                <option value="M" ${memberValue(index, 'shirt_size') === 'M' ? 'selected' : ''}>M</option>
+                                <option value="L" ${memberValue(index, 'shirt_size') === 'L' ? 'selected' : ''}>L</option>
+                                <option value="XL" ${memberValue(index, 'shirt_size') === 'XL' ? 'selected' : ''}>XL</option>
+                                <option value="XXL" ${memberValue(index, 'shirt_size') === 'XXL' ? 'selected' : ''}>XXL</option>
+                                <option value="XXXL" ${memberValue(index, 'shirt_size') === 'XXXL' ? 'selected' : ''}>XXXL</option>
+                            </select>
                         </div>
 
                         <div class="field">
                             <label>Glove Size</label>
-                            <input type="text" name="group_participants[${index}][glove_size]" value="${memberValue(index, 'glove_size')}">
+                            <select name="group_participants[${index}][glove_size]">
+                                <option value="">Select glove size</option>
+                                <option value="XS" ${memberValue(index, 'glove_size') === 'XS' ? 'selected' : ''}>XS</option>
+                                <option value="S" ${memberValue(index, 'glove_size') === 'S' ? 'selected' : ''}>S</option>
+                                <option value="M" ${memberValue(index, 'glove_size') === 'M' ? 'selected' : ''}>M</option>
+                                <option value="L" ${memberValue(index, 'glove_size') === 'L' ? 'selected' : ''}>L</option>
+                                <option value="XL" ${memberValue(index, 'glove_size') === 'XL' ? 'selected' : ''}>XL</option>
+                            </select>
                         </div>
                     </div>
                 `;

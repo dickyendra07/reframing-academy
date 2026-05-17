@@ -117,6 +117,52 @@ class RegistrationInfolist
                     ])
                     ->columns(2),
 
+                Section::make('Group Participants')
+                    ->description('Additional participants included in this group registration.')
+                    ->visible(fn ($record): bool => $record->participants()->exists())
+                    ->schema([
+                        TextEntry::make('group_participants_list')
+                            ->label('Members')
+                            ->state(function ($record): HtmlString {
+                                $participants = $record->participants()->orderBy('participant_order')->get();
+
+                                if ($participants->isEmpty()) {
+                                    return new HtmlString('<span style="color:#6b7280;">No additional group participants.</span>');
+                                }
+
+                                $html = '<div style="display:grid; gap:12px;">';
+
+                                foreach ($participants as $participant) {
+                                    $html .= '
+                                        <div style="border:1px solid #e5e7eb; border-radius:14px; padding:14px; background:#f9fafb;">
+                                            <div style="font-weight:900; color:#111827; font-size:15px;">
+                                                Participant ' . e($participant->participant_order) . ' - ' . e($participant->full_name) . '
+                                            </div>
+
+                                            <div style="margin-top:8px; color:#4b5563; font-size:13px; line-height:1.8;">
+                                                <strong>Email:</strong> ' . e($participant->email ?: '-') . '<br>
+                                                <strong>WhatsApp:</strong> ' . e($participant->phone ?: '-') . '<br>
+                                                <strong>Province / City:</strong> ' . e($participant->province ?: '-') . ' / ' . e($participant->city ?: '-') . '<br>
+                                                <strong>Profession:</strong> ' . e($participant->profession ?: '-') . '<br>
+                                                <strong>Education:</strong> ' . e($participant->education ?: '-') . '<br>
+                                                <strong>NIK:</strong> ' . e($participant->nik_number ?: '-') . '<br>
+                                                <strong>STR:</strong> ' . e($participant->str_number ?: '-') . '<br>
+                                                <strong>Institution:</strong> ' . e($participant->institution ?: '-') . '<br>
+                                                <strong>Shirt Size:</strong> ' . e($participant->shirt_size ?: '-') . '<br>
+                                                <strong>Glove Size:</strong> ' . e($participant->glove_size ?: '-') . '
+                                            </div>
+                                        </div>
+                                    ';
+                                }
+
+                                $html .= '</div>';
+
+                                return new HtmlString($html);
+                            })
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
+
                 Section::make('Payment Review')
                     ->description('Use this section to review uploaded transfer proof before approving the payment.')
                     ->schema([
