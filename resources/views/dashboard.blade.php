@@ -956,6 +956,7 @@
                                                 <select name="document_type" required>
                                                     <option value="">Select document type</option>
                                                     <option value="identity_document">Identity Document / KTP / Passport</option>
+                                                    <option value="id_card_photo">ID Card Photo / Pas Foto ID Card</option>
                                                     <option value="professional_license">Professional License / STR / SIP</option>
                                                     <option value="certificate_or_skp">Certificate / SKP / Supporting Certificate</option>
                                                     <option value="alumni_or_member_proof">Alumni / Member Proof</option>

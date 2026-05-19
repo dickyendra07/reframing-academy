@@ -207,7 +207,17 @@ class RegistrationInfolist
                                 $html = '<div style="display:grid; gap:12px;">';
 
                                 foreach ($documents as $document) {
-                                    $type = e(strtoupper(str_replace('_', ' ', $document->document_type)));
+                                    $typeLabel = match ($document->document_type) {
+                                        'identity_document' => 'IDENTITY DOCUMENT / KTP / PASSPORT',
+                                        'id_card_photo' => 'ID CARD PHOTO / PAS FOTO ID CARD',
+                                        'professional_license' => 'PROFESSIONAL LICENSE / STR / SIP',
+                                        'certificate_or_skp' => 'CERTIFICATE / SKP / SUPPORTING CERTIFICATE',
+                                        'alumni_or_member_proof' => 'ALUMNI / MEMBER PROOF',
+                                        'other_document' => 'OTHER DOCUMENT',
+                                        default => strtoupper(str_replace('_', ' ', $document->document_type)),
+                                    };
+
+                                    $type = e($typeLabel);
                                     $status = e(strtoupper(str_replace('_', ' ', $document->status)));
                                     $uploadedAt = $document->created_at ? $document->created_at->format('d M Y H:i') : '-';
                                     $url = e(Storage::disk('public')->url($document->file_path));
